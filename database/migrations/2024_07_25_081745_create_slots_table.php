@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('month');
             $table->string('time');
             $table->boolean('active');
+            $table->string('owner')->nullable();
             $table->timestamps();
         });
     }
