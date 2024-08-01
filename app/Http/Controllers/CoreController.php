@@ -38,12 +38,8 @@ class CoreController extends Controller
         $slot = Slot::where('owner', $user)->first();
         $strTime = strtotime($slot->date);
 
-        $data = '<div>Date</div>';
-        $data .= '<div>' . date("d M Y", $strTime) . '</div>';
-        $data .= '<div>Time : </div>';
-        $data .= '<div>' . $slot->time . '</div>';
-        $data .= '<div>Teacher</div>';
-        $data .= '<div>' . $slot->name . '</div>';
+        $data = '<div class="ps-3 pb-1">Date : ' . date("d M Y", $strTime) . ' ( ' . $slot->time . ' )</div>';
+        $data .= '<div class="ps-3 pb-1">Teacher : ' . $slot->name . '</div>';
 
         return response()->json(['status' => 1, 'data' => $data], 200);
     }
@@ -162,6 +158,11 @@ class CoreController extends Controller
             "16:20 - 16:40",
         ];
         $record = Slot::groupBy('user', 'name')->select('user')->orderby('user', 'desc')->first();
+        if ($record == null) {
+            $record = (object) [
+                'user' => 0,
+            ];
+        }
         $dateStart = date_create('2024-08-01');
         $dateEnd = date_create('2024-09-30');
         $diff = date_diff($dateStart, $dateEnd);

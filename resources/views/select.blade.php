@@ -73,7 +73,7 @@
                                 confirmButtonColor: 'green'
                             }).then(function(isConfirmed) {
                                 if (isConfirmed) {
-                                    window.location.reload();
+                                    window.location.href = "{{ env('APP_URL') }}/myslot";
                                 }
                             })
                         } else if (res.data.status == 2) {

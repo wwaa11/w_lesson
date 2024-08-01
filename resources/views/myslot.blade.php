@@ -17,8 +17,13 @@
                 <i class="fa-solid fa-caret-left"></i> Back
             </div>
             <div class="text-end text-red-600 cursor-pointer mb-3" onclick="signout()">Sign out</div>
-            <div class="p-3 shadow flex flex-col text-center text-3xl" id="loadData">
-
+            <div class="p-3 flex flex-col">
+                <div class="w-full md:w-1/3 mx-auto rounded p-6 shadow text-xl">
+                    <div class="ps-3 pb-1 font-bold border-b-2">My Appointment</div>
+                    <div id="loadData">
+                        <div class="text-red-600 text-center p-6">No Appointment</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
