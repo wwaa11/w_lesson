@@ -12,9 +12,18 @@
         </div>
     </div>
     <div id="content" class="min-h-screen p-3 hidden">
-        <div class="p-3 flex">
+
+        <div class="p-3 flex gap-6">
+            <a target="_blank"
+                href="https://teams.microsoft.com/l/meetup-join/19%3ameeting_ZjgyZmEyNDgtNzI1Yi00NjlkLWIwN2YtZmFhY2RiNDA0YzNj%40thread.v2/0?context=%7b%22Tid%22%3a%2219fcd1ff-f029-46a2-9b9c-a67782736715%22%2c%22Oid%22%3a%229b8bf406-8c55-4c98-94cb-e3faa6e8870e%22%7d">
+                <div
+                    class="p-3
+                font-bold rounded border border-red-400 text-red-400 hover:bg-red-400 hover:text-white cursor-pointer">
+                    Interview Online Link
+                </div>
+            </a>
             <div onclick="addTeacher()"
-                class=" p-3 font-bold rounded border border-green-400 text-green-400 hover:bg-green-400 hover:text-white cursor-pointer">
+                class="p-3 font-bold rounded border border-green-400 text-green-400 hover:bg-green-400 hover:text-white cursor-pointer">
                 <i class="fa-solid fa-plus"></i> <span id="teacher_text">New Teacher</span>
             </div>
         </div>

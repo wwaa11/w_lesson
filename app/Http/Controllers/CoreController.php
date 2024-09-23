@@ -41,7 +41,7 @@ class CoreController extends Controller
         $data = '<div class="ps-3 pb-1">Date : ' . date("d M Y", $strTime) . ' ( ' . $slot->time . ' )</div>';
         $data .= '<div class="ps-3 pb-1">Interview Type : ' . $slot->interview_type;
         if ($slot->interview_type == "Online") {
-            $data .= '<a class="text-blue-600 font-bold" target="_blank" href="https://teams.microsoft.com/l/meetup-join/19%3ameeting_Zjg5MWVmNjUtYWQxNS00YWEwLWFjNjEtNzA1ODMyMWJiNjMy%40thread.v2/0?context=%7b%22Tid%22%3a%2219fcd1ff-f029-46a2-9b9c-a67782736715%22%2c%22Oid%22%3a%22553204d2-9783-4fd2-91d4-906de5ae26db%22%7d"> LINK</a></div>';
+            $data .= '<a class="text-blue-600 font-bold" target="_blank" href="https://teams.microsoft.com/l/meetup-join/19%3ameeting_ZjgyZmEyNDgtNzI1Yi00NjlkLWIwN2YtZmFhY2RiNDA0YzNj%40thread.v2/0?context=%7b%22Tid%22%3a%2219fcd1ff-f029-46a2-9b9c-a67782736715%22%2c%22Oid%22%3a%229b8bf406-8c55-4c98-94cb-e3faa6e8870e%22%7d"> LINK</a></div>';
         } else if ($slot->interview_type == "offline") {
             $data .= '<span class="text-blue-600 font-bold cursor-pointer"> Face to Face</span></div>';
         } else {
