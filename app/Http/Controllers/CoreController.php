@@ -21,7 +21,7 @@ class CoreController extends Controller
                 'active' => false,
             ];
             $isFull = Slot::whereDate('date', $item->date)->where('active', true)->first();
-            if ($data[$item->month][$i]->active == false && $isFull !== null) {
+            if ($data[$item->month][$i]->active == false && $isFull !== null && $item->date >= date('Y-m-d')) {
                 $data[$item->month][$i]->active = true;
             }
         }
@@ -39,6 +39,14 @@ class CoreController extends Controller
         $strTime = strtotime($slot->date);
 
         $data = '<div class="ps-3 pb-1">Date : ' . date("d M Y", $strTime) . ' ( ' . $slot->time . ' )</div>';
+        $data .= '<div class="ps-3 pb-1">Interview Type : ' . $slot->interview_type;
+        if ($slot->interview_type == "Online") {
+            $data .= '<a class="text-blue-600 font-bold" target="_blank" href="https://teams.microsoft.com/l/meetup-join/19%3ameeting_Zjg5MWVmNjUtYWQxNS00YWEwLWFjNjEtNzA1ODMyMWJiNjMy%40thread.v2/0?context=%7b%22Tid%22%3a%2219fcd1ff-f029-46a2-9b9c-a67782736715%22%2c%22Oid%22%3a%22553204d2-9783-4fd2-91d4-906de5ae26db%22%7d"> LINK</a></div>';
+        } else if ($slot->interview_type == "offline") {
+            $data .= '<span class="text-blue-600 font-bold cursor-pointer"> Face to Face</span></div>';
+        } else {
+            $data .= '</div>';
+        }
         $data .= '<div class="ps-3 pb-1">Teacher : ' . $slot->name . '</div>';
 
         return response()->json(['status' => 1, 'data' => $data], 200);
@@ -56,10 +64,11 @@ class CoreController extends Controller
     public function selectDate($date)
     {
         $slot = Slot::whereDate('date', $date)->get();
-        $date = date('d D M Y', strtotime($date));
+        $date = date('D d M Y', strtotime($date));
         $data = [];
         foreach ($slot as $item) {
-            $data[$item->name][] = [
+            $data[$item->name]['id'] = rand(0, 1000000);
+            $data[$item->name]['slot'][] = [
                 "id" => $item->id,
                 "time" => $item->time,
                 "active" => $item->active,
@@ -84,7 +93,6 @@ class CoreController extends Controller
         $response = $this->auth($req);
 
         if ($response["status"] == 1) {
-
             $slot = Slot::find($req->id);
             if ($slot->active) {
                 $oldSlots = Slot::where('owner', $req->userid)->get();
@@ -92,6 +100,7 @@ class CoreController extends Controller
                     foreach ($oldSlots as $oldSlot) {
                         $oldSlot->active = true;
                         $oldSlot->owner = null;
+                        $oldSlot->interview_type = null;
                         $oldSlot->save();
                     }
 
@@ -101,6 +110,7 @@ class CoreController extends Controller
                 }
                 $slot->active = false;
                 $slot->owner = $req->userid;
+                $slot->interview_type = $req->interview_type;
                 $slot->save();
 
                 $res = [
@@ -136,6 +146,9 @@ class CoreController extends Controller
     }
     public function addTeacher(Request $req)
     {
+        $dateStart = date_create('2024-08-01');
+        $dateEnd = date_create('2024-09-30');
+        $diff = date_diff($dateStart, $dateEnd);
         $name = $req->name;
         $slot = [
             "9:00 - 9:20",
@@ -163,9 +176,6 @@ class CoreController extends Controller
                 'user' => 0,
             ];
         }
-        $dateStart = date_create('2024-08-01');
-        $dateEnd = date_create('2024-09-30');
-        $diff = date_diff($dateStart, $dateEnd);
         for ($i = 1; $i <= $diff->days + 1; $i++) {
             $date = date_format($dateStart, "Y-m-d");
             foreach ($slot as $index => $s) {

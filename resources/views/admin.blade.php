@@ -34,10 +34,10 @@
     <script>
         $(document).ready(function() {
             var authCookie = getCookie('auth');
+            console.log(authCookie)
             if (authCookie) {
                 $('#login').hide();
                 $('#content').show();
-
             }
         });
 
@@ -48,6 +48,7 @@
             const res = await axios.post("{{ env('APP_URL') }}" + "/auth", formData, {
                 "Content-Type": "multipart/form-data"
             });
+            console.log(res)
             if (res.data.status == 1) {
                 $('#login').hide();
                 setCookie('auth', $('#userid').val(), 1);

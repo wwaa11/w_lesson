@@ -15,9 +15,9 @@
 
 <body class="min-h-screen">
     @yield('content')
-    <footer class="bg-gray-300 h-8">
-        <div class="text-center ">
-            Praram9 Hospital
+    <footer class="border-t-2 border-gray-50 mt-6 h-8">
+        <div class="text-center font-bold">
+            Praram9 Hospital, 2024.
         </div>
     </footer>
 </body>
