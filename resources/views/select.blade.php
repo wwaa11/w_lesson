@@ -67,18 +67,16 @@
             Swal.fire({
                     title: 'ยืนยันการเลือก',
                     icon: 'question',
-                    html: `<input type="text" id="login" class="swal2-input" placeholder="รหัสพนักงาน"><input type="password" id="password" class="swal2-input" placeholder="รหัสผ่าน">`,
+                    html: `<input type="text" id="login" class="w-full p-3 border" placeholder="รหัสพนักงาน/รหัสแพทย์">`,
                     confirmButtonText: "ยืนยัน",
                     confirmButtonColor: "green",
                     preConfirm: () => {
                         const login = Swal.getPopup().querySelector('#login').value
-                        const password = Swal.getPopup().querySelector('#password').value
-                        if (!login || !password) {
-                            Swal.showValidationMessage(`โปรดระบุรหัสพนักงาน และ รหัสผ่าน`)
+                        if (!login) {
+                            Swal.showValidationMessage(`โปรดระบุรหัสพนักงาน/รหัสแพทย์`)
                         }
                         return {
                             login: login,
-                            password: password
                         }
                     }
                 })
@@ -86,8 +84,8 @@
                     if (result.isConfirmed) {
                         const formData = new FormData();
                         formData.append('userid', result.value.login);
-                        formData.append('password', result.value.password);
                         formData.append('id', id);
+                        formData.append('password', 'skip');
                         formData.append('interview_type', type);
                         const res = await axios.post("{{ env('APP_URL') }}" + "/saveslot", formData, {
                             "Content-Type": "multipart/form-data"

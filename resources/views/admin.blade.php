@@ -84,10 +84,9 @@
             const res = await axios.post("{{ env('APP_URL') }}" + "/auth", formData, {
                 "Content-Type": "multipart/form-data"
             });
-            console.log(res)
             if (res.data.status == 1) {
+                // setCookie('auth', $('#userid').val(), 1);
                 $('#login').hide();
-                setCookie('auth', $('#userid').val(), 1);
                 $('#content').show();
             } else if (res.data.status == 2) {
                 Swal.fire({
