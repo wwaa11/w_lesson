@@ -103,8 +103,11 @@
             const swal = await Swal.fire({
                 title: 'Title',
                 icon: 'question',
-                html: '<div class="flex gap-3"><input class="flex-grow p-3 border border-blue-600 rounded" value="2025-01-27" type="date" id="date_start" ><input class="flex-grow p-3 border border-blue-600 rounded" type="date" id="date_end" value="2025-04-02"></div>',
+                html: '<div class="flex gap-3"><input value="{{ date('Y-m-d') }}" class="flex-grow p-3 border border-blue-600 rounded" type="date" id="date_start" ><input value="{{ date('Y-m-d') }}" class="flex-grow p-3 border border-blue-600 rounded" type="date" id="date_end"></div>',
                 preConfirm: false,
+                showCancelButton: true,
+                confirmButtonText: "Add",
+                denyButtonText: "Cancel",
                 preConfirm: () => {
                     return [
                         $('#date_start').val(),
