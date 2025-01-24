@@ -13,6 +13,6 @@ Route::post('/saveslot', [CoreController::class, 'saveSlot']);
 Route::get('/admin', [CoreController::class, 'admin']);
 Route::post('/auth', [CoreController::class, 'authAdmin']);
 Route::get('/admin/{teacher}', [CoreController::class, 'teacherEdit']);
-Route::post('/addteacher', [CoreController::class, 'addTeacher']);
+Route::post('/addslot', [CoreController::class, 'addSlot']);
 Route::post('/updateslot', [CoreController::class, 'updateSlot']);
 Route::post('/updatetime', [CoreController::class, 'updateTime']);

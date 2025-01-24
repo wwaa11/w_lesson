@@ -12,30 +12,40 @@
         </div>
     </div>
     <div id="content" class="min-h-screen p-3 hidden">
-
         <div class="p-3 flex gap-6">
-            <a target="_blank"
-                href="https://teams.microsoft.com/l/meetup-join/19%3ameeting_ZjgyZmEyNDgtNzI1Yi00NjlkLWIwN2YtZmFhY2RiNDA0YzNj%40thread.v2/0?context=%7b%22Tid%22%3a%2219fcd1ff-f029-46a2-9b9c-a67782736715%22%2c%22Oid%22%3a%229b8bf406-8c55-4c98-94cb-e3faa6e8870e%22%7d">
-                <div
-                    class="p-3
-                font-bold rounded border border-red-400 text-red-400 hover:bg-red-400 hover:text-white cursor-pointer">
-                    Interview Online Link
-                </div>
-            </a>
-            <div onclick="addTeacher()"
+            <div class="flex-grow"></div>
+            <div onclick="addSlot()"
                 class="p-3 font-bold rounded border border-green-400 text-green-400 hover:bg-green-400 hover:text-white cursor-pointer">
-                <i class="fa-solid fa-plus"></i> <span id="teacher_text">New Teacher</span>
+                <i class="fa-solid fa-plus"></i> <span id="teacher_text">Add Date</span>
             </div>
         </div>
         <div class="p-3 shadow">
-            <div class="font-bold text-3xl mb-3 px-3">Teacher</div>
-            @foreach ($teachers as $item)
-                <a href="{{ env('APP_URL') }}/admin/{{ $item->user }}">
-                    <div class="p-3 shadow mb-3 cursor-pointer hover:bg-green-200">
-                        <div>{{ $item->name }}</div>
+            <div class="font-bold text-3xl mb-3 px-3">All Slot</div>
+            <div class="grid grid-cols-3 md:grid-cols-6 gap-3">
+                @foreach ($outPut as $key => $date)
+                    <div class="shadow mb-3">
+                        <div onclick="toggleKey('#{{ str_replace(' ', '', $key) }}')" class="text-center bg-gray-200 p-3">
+                            {{ $key }}</div>
+                        <div class="hidden" id="{{ str_replace(' ', '', $key) }}">
+                            @foreach ($date as $time => $Timedata)
+                                <div class="my-1 rounded border">
+                                    <div class="p-3 text-center bg-gray-100">{{ $time }}</div>
+                                    @foreach ($Timedata as $item)
+                                        @if (!$item['active'])
+                                            <div class="flex hover:bg-blue-400">
+                                                <div class="flex-shrink p-3">{{ $item['owner'] }}</div>
+                                                <div class="flex-grow p-3">
+                                                    {{ $item['owner_name'] }}
+                                                </div>
+                                            </div>
+                                        @endif
+                                    @endforeach
+                                </div>
+                            @endforeach
+                        </div>
                     </div>
-                </a>
-            @endforeach
+                @endforeach
+            </div>
         </div>
     </div>
 @endsection
@@ -43,12 +53,29 @@
     <script>
         $(document).ready(function() {
             var authCookie = getCookie('auth');
-            console.log(authCookie)
             if (authCookie) {
                 $('#login').hide();
                 $('#content').show();
             }
         });
+
+        const show = false;
+
+        function toggleTime(id) {
+            // if (!show) {
+            //     $(id).removeClass('hidden');
+            //     $(id).addClass('flex');
+            //     show = true;
+            // } else {
+            //     $(id).addClass('hidden');
+            //     $(id).removeClass('flex');
+            //     show = false;
+            // }
+        }
+
+        function toggleKey(id) {
+            $(id).toggle()
+        }
 
         async function login() {
             const formData = new FormData();
@@ -72,45 +99,37 @@
             }
         }
 
-        function addTeacher() {
-            Swal.fire({
-                    title: 'ระบุชื่อคุณครู',
-                    icon: 'question',
-                    html: `<input type="text" id="name" class="swal2-input" placeholder="Teacher Name">`,
-                    confirmButtonText: "ยืนยัน",
-                    confirmButtonColor: "green",
-                    preConfirm: () => {
-                        const name = Swal.getPopup().querySelector('#name').value
-                        if (!name) {
-                            Swal.showValidationMessage(`โปรดระบุชื่อ`)
-                        }
-                        return {
-                            name: name,
-                        }
-                    }
+        async function addSlot() {
+            const swal = await Swal.fire({
+                title: 'Title',
+                icon: 'question',
+                html: '<div class="flex gap-3"><input class="flex-grow p-3 border border-blue-600 rounded" value="2025-01-27" type="date" id="date_start" ><input class="flex-grow p-3 border border-blue-600 rounded" type="date" id="date_end" value="2025-04-02"></div>',
+                preConfirm: false,
+                preConfirm: () => {
+                    return [
+                        $('#date_start').val(),
+                        $('#date_end').val()
+                    ]
+                }
+            })
+            if (swal.isConfirmed) {
+                Swal.fire({
+                    title: 'Please, wait.',
+                    icon: 'info',
                 })
-                .then(async (result) => {
-                    if (result.isConfirmed) {
-                        const formData = new FormData();
-                        formData.append('name', result.value.name);
-                        $('#teacher_text').html('Please Wait...')
-                        const res = await axios.post("{{ env('APP_URL') }}" + "/addteacher", formData, {
-                            "Content-Type": "multipart/form-data"
-                        });
-                        if (res.data.status == 1) {
-                            Swal.fire({
-                                title: 'เพิ่มสำเร็จ',
-                                text: res.data.text,
-                                icon: 'success',
-                                confirmButtonColor: 'green'
-                            }).then(function(isConfirmed) {
-                                if (isConfirmed) {
-                                    window.location.reload();
-                                }
-                            })
-                        }
-                    }
-                });
+                const formData = new FormData();
+                formData.append('date', swal.value);
+                const res = await axios.post("{{ env('APP_URL') }}" + "/addslot", formData);
+                console.log(res.data.status);
+                if (res.data.status == 'success') {
+                    Swal.fire({
+                        title: 'Success.',
+                        icon: 'success',
+                    })
+                    location.reload()
+                }
+
+            }
         }
     </script>
 @endsection

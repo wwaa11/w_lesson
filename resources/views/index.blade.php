@@ -1,16 +1,17 @@
 @extends('app')
 @section('content')
     <div class="w-4/5 m-auto">
-        <div class="p-3 md:text-3xl font-bold text-center">English Interview</div>
+        <div class="p-3 md:text-3xl font-bold text-center">Photo Slot</div>
         <div class="mt-6 border-2 border-gray-400 rounded p-3 shadow-md">
             <div class="ps-3 mb-1 flex">
-                <div class="flex-grow font-bold text-lg">รอบการเข้าทดสอบของฉัน</div>
-                <div class="flex-shrink text-red-600 cursor-pointer font-bold" onclick="login()">เข้าสู่ระบบ</div>
+                <div class="flex-grow font-bold text-lg">รอบการจองของฉัน</div>
+                <div class="flex-shrink text-red-600 cursor-pointer font-bold" onclick="login()" id="loginBtn">เข้าสู่ระบบ
+                </div>
             </div>
             <div class="" id="loadData"></div>
         </div>
         <hr class="my-3">
-        <div class="p-3 font-bold">เลือกวันที่ต้องการเข้ารับการทดสอบ</div>
+        <div class="p-3 font-bold">เลือกวันที่ต้องการเข้ารับการถ่ายรูป</div>
         @foreach ($data as $key => $month)
             <div class="grid md:grid-cols-7 gap-3 mb-3 shadow p-6">
                 <div
@@ -51,6 +52,22 @@
                         <div class="hidden md:block w-20 h-20 rounded bg-gray-50 m-auto"></div>
                         <div class="hidden md:block w-20 h-20 rounded bg-gray-50 m-auto"></div>
                     @endif
+                    @if ($i == 0 && $item->day == 'Sat')
+                        <div class="hidden md:block w-20 h-20 rounded bg-gray-50 m-auto"></div>
+                        <div class="hidden md:block w-20 h-20 rounded bg-gray-50 m-auto"></div>
+                        <div class="hidden md:block w-20 h-20 rounded bg-gray-50 m-auto"></div>
+                        <div class="hidden md:block w-20 h-20 rounded bg-gray-50 m-auto"></div>
+                        <div class="hidden md:block w-20 h-20 rounded bg-gray-50 m-auto"></div>
+                        <div class="hidden md:block w-20 h-20 rounded bg-gray-50 m-auto"></div>
+                    @endif
+                    @if ($i == 0 && $item->day == 'Sun')
+                        <div class="hidden md:block w-20 h-20 rounded bg-gray-50 m-auto"></div>
+                        <div class="hidden md:block w-20 h-20 rounded bg-gray-50 m-auto"></div>
+                        <div class="hidden md:block w-20 h-20 rounded bg-gray-50 m-auto"></div>
+                        <div class="hidden md:block w-20 h-20 rounded bg-gray-50 m-auto"></div>
+                        <div class="hidden md:block w-20 h-20 rounded bg-gray-50 m-auto"></div>
+                        <div class="hidden md:block w-20 h-20 rounded bg-gray-50 m-auto"></div>
+                    @endif
                     @if ($item->active)
                         <div onclick="selectDate('{{ $item->fulldate }}')"
                             class="text-center pt-5 font-bold m-auto w-full md:w-20 h-20 rounded text-3xl border-2 border-green-400 text-green-400 cursor-pointer hover:bg-green-400 hover:text-white">
@@ -80,6 +97,7 @@
             var authCookie = getCookie('auth');
             if (authCookie) {
                 viewData(authCookie)
+                $('#loginBtn').html('เปลี่ยนผู้ใช้งาน');
             }
         });
 
@@ -142,6 +160,7 @@
             $('#loadData').html(res.data.data)
 
         }
+
         async function selectDate(date) {
             const formData = new FormData();
             formData.append('date', date);

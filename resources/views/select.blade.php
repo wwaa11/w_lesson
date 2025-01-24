@@ -4,17 +4,17 @@
         <div class="grid grid-flow-col text-3xl">
             <div class="text-red-600 cursor-pointer">
                 <i onclick="history.back()" class="fa-solid fa-caret-left p-3 rounded"></i>
-                <span onclick="history.back()">Change Date</span>
+                <span onclick="history.back()">Change reservation date</span>
             </div>
         </div>
         <div class="shadow border border-gray-100 m-3 p-3">
             <div class="px-6 mb-1">
-                <div>วันที่เข้ารับการทดสอบ</div>
+                <div>Reservation Date</div>
                 <div class="text-2xl text-red-600">
-                    {{ $date }}
+                    {{ $date[0] }} {{ $date[1] }}
                 </div>
             </div>
-            <div class="px-6 mb-1">
+            <div class="px-6 mb-1 hidden">
                 <div>รูปแบบการทดสอบ</div>
                 <div>
                     <div>
@@ -28,27 +28,27 @@
                 </div>
             </div>
             <div class="px-6">
-                <div>รอบการเข้าทดสอบ</div>
+                <div>รอบการถ่ายรูป</div>
                 @foreach ($data as $key => $tech)
-                    <div class="col-span-2 font-bold p-3 border-2 border-green-300 text-green-600 rounded my-3 text-center"
+                    <div class="col-span-2 font-bold p-3 border-2 border-blue-300 text-blue-600 rounded my-3 text-center"
                         onclick="showTeacher('#teacher{{ $tech['id'] }}')">
                         {{ $key }}
                     </div>
-                    <div id="teacher{{ $tech['id'] }}">
+                    <div id="teacher{{ $tech['id'] }}" class="flex gap-6">
                         @foreach ($tech['slot'] as $item)
                             <div
-                                class="mb-1 grid grid-cols-2 @if ($item['time'] == 'Break') bg-gray-200 @endif @if ($item['active']) hover:bg-gray-100 @endif">
-                                <div class="pt-3 ps-3">
-                                    {{ $item['time'] }}
-                                </div>
+                                class="mb-1 flex-grow @if ($item['time'] == 'Break') bg-gray-200 @endif @if ($item['active']) hover:bg-gray-100 @endif">
+                                {{-- <div class="pt-3 ps-3">
+                                    {{ $item['slot'] }}. {{ $item['time'] }}
+                                </div> --}}
                                 @if ($item['active'])
-                                    <div class="text-end">
+                                    <div class="text-center">
                                         <button onclick="select('{{ $item['id'] }}')"
-                                            class="text-green-400 p-2 border border-green-400 hover:text-white hover:bg-green-400">Available</button>
+                                            class="text-blue-400 w-full p-2 border border-blue-400 hover:text-white hover:bg-blue-400">Available</button>
                                     </div>
                                 @else
-                                    <div class="text-end">
-                                        <button class="text-red-600 p-3 cursor-not-allowed">Not Available</button>
+                                    <div class="text-center">
+                                        <button class="text-red-600 w-full p-3 cursor-not-allowed">Not Available</button>
                                     </div>
                                 @endif
                             </div>

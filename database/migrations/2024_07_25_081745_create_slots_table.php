@@ -15,13 +15,16 @@ return new class extends Migration
             $table->id();
             $table->integer('user');
             $table->string('name');
-            $table->date('date');
+            $table->datetime('dateTime');
+            $table->date('dateFull');
+            $table->string('day_index');
             $table->string('day');
-            $table->integer('time_index');
             $table->string('month');
             $table->string('time');
-            $table->boolean('active');
+            $table->integer('slot');
+            $table->boolean('active')->default(1);
             $table->string('owner')->nullable();
+            $table->string('owner_name')->nullable();
             $table->timestamps();
         });
     }

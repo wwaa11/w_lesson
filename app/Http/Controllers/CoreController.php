@@ -11,19 +11,21 @@ class CoreController extends Controller
     //
     public function main()
     {
-        $slots = Slot::groupBy('date', 'month', 'day')->select('date', 'month', 'day')->orderBy('date', 'asc')->get();
+        $slots = Slot::groupBy('dateFull','day_index','day','month')
+            ->select('dateFull','day_index','day','month')
+            ->orderBy('dateFull', 'asc')
+            ->get();
         $data = [];
+        $allSlot = Slot::all();
         foreach ($slots as $i => $item) {
-            $data[$item->month][$i] = (object) [
-                'fulldate' => date("Y-m-d", strtotime($item->date)),
-                'date' => date("d", strtotime($item->date)),
+            $isFull = collect($allSlot)->where('day', $item->day)->where('month', $item->month)->where('active', true)->first();
+            $data[$item->month][] = (object)[
+                'active' => ($isFull == null)? flase : true,
+                'date' => $item->day_index,
                 'day' => $item->day,
-                'active' => false,
+                'month' => $item->month,
+                'fulldate' =>  $item->day_index.'_'.$item->month
             ];
-            $isFull = Slot::whereDate('date', $item->date)->where('active', true)->first();
-            if ($data[$item->month][$i]->active == false && $isFull !== null && $item->date >= date('Y-m-d')) {
-                $data[$item->month][$i]->active = true;
-            }
         }
 
         return view('index')->with(compact('data'));
@@ -36,25 +38,23 @@ class CoreController extends Controller
     {
         $user = $req->userid;
         $slot = Slot::where('owner', $user)->first();
-        $strTime = strtotime($slot->date);
-
-        $data = '<div class="ps-3 pb-1">Date : ' . date("d M Y", $strTime) . ' ( ' . $slot->time . ' )</div>';
-        $data .= '<div class="ps-3 pb-1">Interview Type : ' . $slot->interview_type;
-        if ($slot->interview_type == "Online") {
-            $data .= '<a class="text-blue-600 font-bold" target="_blank" href="https://teams.microsoft.com/l/meetup-join/19%3ameeting_ZjgyZmEyNDgtNzI1Yi00NjlkLWIwN2YtZmFhY2RiNDA0YzNj%40thread.v2/0?context=%7b%22Tid%22%3a%2219fcd1ff-f029-46a2-9b9c-a67782736715%22%2c%22Oid%22%3a%229b8bf406-8c55-4c98-94cb-e3faa6e8870e%22%7d"> LINK</a></div>';
-        } else if ($slot->interview_type == "offline") {
-            $data .= '<span class="text-blue-600 font-bold cursor-pointer"> Face to Face</span></div>';
-        } else {
-            $data .= '</div>';
+        if ($slot == null) {
+            $data = '<div class="ps-3 pb-1">' . $user . ' ไม่มีการรอบการจอง</div>';
+            return response()->json(['status' => 1, 'data' => $data], 200);
         }
-        $data .= '<div class="ps-3 pb-1">Teacher : ' . $slot->name . '</div>';
+        $strTime = strtotime($slot->dateFull);
+
+        $data = '<div class="ps-3 pb-1">Name : ' . $slot->owner_name .'</div>';
+        $data .= '<div class="ps-3 pb-1">Date : ' . date("d M Y", $strTime) . ' ( ' . $slot->time . ' )</div>';
 
         return response()->json(['status' => 1, 'data' => $data], 200);
     }
     public function checkDate(Request $req)
     {
-        $date = $req->date;
-        $findSlot = Slot::whereDate('date', $date)->where('active', 1)->first();
+        
+        $date = explode('_', $req->date);
+
+        $findSlot = Slot::where('day_index', $date[0])->where('month', $date[1])->where('active', 1)->first();
         if ($findSlot == null) {
             return response()->json(["status" => 2, "text" => "Full Select Date."], 200);
         }
@@ -63,18 +63,20 @@ class CoreController extends Controller
     }
     public function selectDate($date)
     {
-        $slot = Slot::whereDate('date', $date)->get();
-        $date = date('D d M Y', strtotime($date));
+        $date = explode('_', $date);
+
+        $slot = Slot::where('day_index', $date[0])->where('month', $date[1])->get();
         $data = [];
         foreach ($slot as $item) {
-            $data[$item->name]['id'] = rand(0, 1000000);
-            $data[$item->name]['slot'][] = [
+            $data[$item->time]['id'] = rand(0, 1000000);
+            $data[$item->time]['slot'][] = [
                 "id" => $item->id,
+                "slot" => $item->slot,
                 "time" => $item->time,
                 "active" => $item->active,
             ];
         }
-
+        
         return view('select')->with(compact('date', 'data'));
     }
     public function auth($req)
@@ -91,7 +93,6 @@ class CoreController extends Controller
     public function saveSlot(Request $req)
     {
         $response = $this->auth($req);
-
         if ($response["status"] == 1) {
             $slot = Slot::find($req->id);
             if ($slot->active) {
@@ -110,6 +111,7 @@ class CoreController extends Controller
                 }
                 $slot->active = false;
                 $slot->owner = $req->userid;
+                $slot->owner_name = $response['user']['name'];
                 $slot->interview_type = $req->interview_type;
                 $slot->save();
 
@@ -138,63 +140,88 @@ class CoreController extends Controller
     {
         return $this->auth($req);
     }
+
     public function admin()
     {
-        $teachers = Slot::groupBy('user', 'name')->select('user', 'name')->orderby('user', 'asc')->get();
-
-        return view('admin')->with(compact('teachers'));
-    }
-    public function addTeacher(Request $req)
-    {
-        $dateStart = date_create('2024-08-01');
-        $dateEnd = date_create('2024-09-30');
-        $diff = date_diff($dateStart, $dateEnd);
-        $name = $req->name;
-        $slot = [
-            "9:00 - 9:20",
-            "9:20 - 9:40",
-            "9:40 - 10:00",
-            "10:00 - 10:20",
-            "10:20 - 10:40",
-            "10:40 - 11:00",
-            "11:00 - 11:20",
-            "11:20 - 11:40",
-            "11:40 - 12:00",
-            "Break",
-            "14:00 - 14:20",
-            "14:20 - 12:40",
-            "14:40 - 15:00",
-            "15:00 - 15:20",
-            "15:20 - 15:40",
-            "15:40 - 16:00",
-            "16:00 - 16:20",
-            "16:20 - 16:40",
-        ];
-        $record = Slot::groupBy('user', 'name')->select('user')->orderby('user', 'desc')->first();
-        if ($record == null) {
-            $record = (object) [
-                'user' => 0,
+        $slots = Slot::orderby('dateTime', 'asc')->get();
+        $outPut = [];
+        foreach ($slots as $value) {
+            $day = date('d', strtotime($value->dateTime));
+            $key = $day.' '.$value->day.' '.$value->month;
+            $outPut[$key][$value->time][] = [
+                'month' => $value->month,
+                'day' => $value->day,
+                'time' => $value->time,
+                'slot' => $value->slot,
+                'active' => $value->active,
+                'owner' => $value->owner,
+                'owner_name' => $value->owner_name,
             ];
         }
+
+        return view('admin')->with(compact('outPut'));
+    }
+    public function addSlot(Request $req)
+    {
+        $dateInput = explode(',',$req->date);
+        $dateStart = date_create($dateInput[0]);
+        $dateEnd = date_create($dateInput[1]);
+        $diff = date_diff($dateStart, $dateEnd);
+
+        $timeArr = [
+            "9:00",
+            "9:20",
+            "9:40",
+            "10:00",
+            "10:20",
+            "10:40",
+            "11:00",
+            "11:20",
+            "11:40",
+            "13:00",
+            "13:20",
+            "13:40",
+            "14:00",
+            "14:20",
+            "14:40",
+            "15:00",
+            "15:20",
+            "15:40",
+            "16:00",
+            "16:20",
+            "16:40",
+        ];
+        $slotArr = ['1','2','3'];
+        $allSlot = Slot::all();
+        
         for ($i = 1; $i <= $diff->days + 1; $i++) {
-            $date = date_format($dateStart, "Y-m-d");
-            foreach ($slot as $index => $s) {
-                $new = new Slot;
-                $new->user = $record->user + 1;
-                $new->name = $name;
-                $new->date = $date;
-                $new->day = date_format($dateStart, "D");
-                $new->month = date_format($dateStart, "F");
-                $new->time_index = $index;
-                $new->time = $s;
-                $new->active = ($index == 9) ? 0 : 1;
-                $new->save();
+            $date = date_format($dateStart, 'Y-m-d');
+            foreach ($timeArr as $key => $time) {
+                $dateTime = date_create($date.$time);
+                foreach ($slotArr as $slotIndex) {
+                    $search = date_format($dateTime, "Y-m-d H:i:s").'.000';
+                    $findSlot = collect($allSlot)->where('dateTime', $search)->where('slot', $slotIndex)->first();
+                    if($findSlot == null){
+                        $slot = new Slot;
+                        $slot->dateFull = date_format($dateTime, "Y-m-d");
+                        $slot->dateTime = $dateTime;
+                        $slot->user = 1;
+                        $slot->name = "Take Picture";
+                        $slot->day_index = date_format($dateTime, "d");
+                        $slot->month = date_format($dateTime, "M");
+                        $slot->day = date_format($dateTime, "D");
+                        $slot->time = date_format($dateTime, "H:i");
+                        $slot->slot = $slotIndex;
+                        $slot->save();
+                    }
+                }
             }
             $dateStart = date_add($dateStart, date_interval_create_from_date_string("1 days"));
         }
 
-        return response()->json(["status" => 1], 200);
+        return response()->json(["status" => 'success'], 200);
     }
+
     public function teacherEdit($id)
     {
         $slots = Slot::where('user', $id)->orderBy('date', 'asc')->orderby('time_index', 'asc')->get();
