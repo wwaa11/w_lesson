@@ -30,7 +30,7 @@
             <div class="px-6">
                 <div>รอบการถ่ายรูป</div>
                 @foreach ($data as $key => $tech)
-                    <div class="col-span-2 font-bold p-3 border-2 border-blue-300 text-blue-600 rounded my-3 text-center"
+                    <div class="col-span-2 font-bold p-3 bg-gray-200 text-gray-600 rounded my-3 text-center"
                         onclick="showTeacher('#teacher{{ $tech['id'] }}')">
                         {{ $key }}
                     </div>
@@ -38,13 +38,10 @@
                         @foreach ($tech['slot'] as $item)
                             <div
                                 class="mb-1 flex-grow @if ($item['time'] == 'Break') bg-gray-200 @endif @if ($item['active']) hover:bg-gray-100 @endif">
-                                {{-- <div class="pt-3 ps-3">
-                                    {{ $item['slot'] }}. {{ $item['time'] }}
-                                </div> --}}
                                 @if ($item['active'])
                                     <div class="text-center">
                                         <button onclick="select('{{ $item['id'] }}')"
-                                            class="text-blue-400 w-full p-2 border border-blue-400 hover:text-white hover:bg-blue-400">Available</button>
+                                            class="text-green-400 w-full p-2 border-2 font-bold border-green-400 hover:text-white hover:bg-green-400">Available</button>
                                     </div>
                                 @else
                                     <div class="text-center">

@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>PR9 English Lesson</title>
+    <title>PR9 Doctor Photo</title>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="https://kit.fontawesome.com/a20e89230f.js" crossorigin="anonymous"></script>
     <script src="{{ asset('js/jquery.min.js') }}"></script>
