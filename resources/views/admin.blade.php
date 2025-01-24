@@ -21,7 +21,7 @@
         </div>
         <div class="p-3 shadow">
             <div class="font-bold text-3xl mb-3 px-3">All Slot</div>
-            <div class="grid grid-cols-3 md:grid-cols-6 gap-3">
+            <div class="grid grid-cols-1 md:grid-cols-6 gap-3">
                 @foreach ($outPut as $key => $date)
                     <div class="shadow mb-3">
                         <div onclick="toggleKey('#{{ str_replace(' ', '', $key) }}')" class="text-center bg-gray-200 p-3">

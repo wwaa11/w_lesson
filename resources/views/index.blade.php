@@ -1,7 +1,7 @@
 @extends('app')
 @section('content')
     <div class="w-4/5 m-auto">
-        <div class="p-3 md:text-3xl font-bold text-center">Photo Slot</div>
+        <div class="p-3 md:text-3xl font-bold text-center">Photo Reservation Slot</div>
         <div class="mt-6 border-2 border-gray-400 rounded p-3 shadow-md">
             <div class="ps-3 mb-1 flex">
                 <div class="flex-grow font-bold text-lg">รอบการจองของฉัน</div>

@@ -8,6 +8,7 @@
     <title>PR9 Doctor Photo</title>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="https://kit.fontawesome.com/a20e89230f.js" crossorigin="anonymous"></script>
+    <link rel="shortcut icon" href="{{ url('images/Logo.ico') }}">
     <script src="{{ asset('js/jquery.min.js') }}"></script>
     <script src="{{ asset('js/sweetalert2.js') }}"></script>
     @vite('resources/css/app.css')
